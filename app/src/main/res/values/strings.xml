@@ -73,5 +73,7 @@
 
     <!-- Content Description Strings -->
     <string name="android_map_description">An Android robot with a map</string>
+    <string name="request_fine_and_background_location_permission">1</string>
+    <string name="request_fine_location_permission">2</string>
 
 </resources>
