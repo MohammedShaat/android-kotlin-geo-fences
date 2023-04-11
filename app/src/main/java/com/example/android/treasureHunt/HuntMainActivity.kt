@@ -253,7 +253,7 @@ class HuntMainActivity : AppCompatActivity() {
     private fun addGeofenceForClue() {
         if (viewModel.geofenceIsActive()) return
         val currentGeofenceIndex = viewModel.nextGeofenceIndex()
-        if(currentGeofenceIndex >= GeofencingConstants.NUM_LANDMARKS) {
+        if (currentGeofenceIndex >= GeofencingConstants.NUM_LANDMARKS) {
             removeGeofences()
             viewModel.geofenceActivated()
             return
@@ -262,7 +262,8 @@ class HuntMainActivity : AppCompatActivity() {
 
         val geofence = Geofence.Builder()
             .setRequestId(currentGeofenceData.id)
-            .setCircularRegion(currentGeofenceData.latLong.latitude,
+            .setCircularRegion(
+                currentGeofenceData.latLong.latitude,
                 currentGeofenceData.latLong.longitude,
                 GeofencingConstants.GEOFENCE_RADIUS_IN_METERS
             )
@@ -279,15 +280,19 @@ class HuntMainActivity : AppCompatActivity() {
             addOnCompleteListener {
                 geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
                     addOnSuccessListener {
-                        Toast.makeText(this@HuntMainActivity, R.string.geofences_added,
-                            Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            this@HuntMainActivity, R.string.geofences_added,
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                         Log.e("Add Geofence", geofence.requestId)
                         viewModel.geofenceActivated()
                     }
                     addOnFailureListener {
-                        Toast.makeText(this@HuntMainActivity, R.string.geofences_not_added,
-                            Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@HuntMainActivity, R.string.geofences_not_added,
+                            Toast.LENGTH_SHORT
+                        ).show()
                         if ((it.message != null)) {
                             Log.w(TAG, "${it.message}")
                         }
@@ -302,7 +307,25 @@ class HuntMainActivity : AppCompatActivity() {
      * permission.
      */
     private fun removeGeofences() {
-        // TODO: Step 12 add in code to remove the geofences
+        if (!foregroundAndBackgroundLocationPermissionApproved()) return
+
+        geofencingClient.removeGeofences(geofencePendingIntent).run {
+            addOnSuccessListener {
+                Toast.makeText(
+                    applicationContext,
+                    R.string.geofences_removed,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            addOnFailureListener {
+                Toast.makeText(
+                    applicationContext,
+                    R.string.geofences_not_removed,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     companion object {
